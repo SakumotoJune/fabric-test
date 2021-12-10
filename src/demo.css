@@ -1,0 +1,15 @@
+.container {
+  position:relative;
+}
+
+#canv {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.crop-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
