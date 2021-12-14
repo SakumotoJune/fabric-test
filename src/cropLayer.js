@@ -2,7 +2,7 @@ import React, {
   useRef,
   useState,
   useCallback,
-  // useMemo,
+  useMemo,
   useEffect,
 } from "react";
 import ReactCrop from "react-image-crop";
@@ -14,61 +14,52 @@ const CropLayer = ({ clipObj, onClip }) => {
   const imgRef = useRef();
   const [crop, setCrop] = useState({});
   const [completedCrop, setCompletedCrop] = useState();
-  const [cropStyle, setCropStyle] = useState();
+  // const [cropStyle, setCropStyle] = useState();
 
-  // const cropStyle = useMemo(() => {
-  //   if (imgRef.current) {
-  //     return {
-  //       top: `${clipObj.top - clipObj.cropX}px`,
-  //       left: `${clipObj.left - clipObj.cropY}px`,
-  //       width: `${clipObj.scaleX * imgRef.current.naturalWidth}px`,
-  //       height: `${clipObj.scaleY * imgRef.current.naturalHeight}px`,
-  //     };
-  //   }
-  //   return {};
-  // }, [clipObj]);
-
-  // const init = useCallback(
-  //   (img) => {
-  //     // if (!imgRef.current) return;
-  //     // const img = imgRef.current;
-  //     console.log("******", img.naturalHeight, img.naturalWidth);
-  //     setCropStyle({
-  //       top: `${clipObj.top - clipObj.cropX}px`,
-  //       left: `${clipObj.left - clipObj.cropY}px`,
-  //       width: `${clipObj.scaleX * img.naturalWidth}px`,
-  //       height: `${clipObj.scaleY * img.naturalHeight}px`,
-  //     });
-  //   },
-  //   [clipObj]
-  // );
+  const cropStyle = useMemo(() => {
+    console.log("******", clipObj);
+    return {
+      top: `${clipObj.top - clipObj.cropX * clipObj.scaleX}px`,
+      left: `${clipObj.left - clipObj.cropY * clipObj.scaleY}px`,
+      width: `${clipObj.scaleX * clipObj.naturalWidth}px`,
+      height: `${clipObj.scaleY * clipObj.naturalHeight}px`,
+    };
+  }, [clipObj]);
 
   useEffect(() => {
     console.log("crop layer init");
   }, []);
 
-  const onLoad = useCallback(
-    (img) => {
-      imgRef.current = img;
-      // init(img);
-      console.log("******", clipObj, img.naturalHeight, img.naturalWidth);
-      const scaleX = img.naturalWidth / img.width;
-      const scaleY = img.naturalHeight / img.height;
-      setCropStyle({
-        top: `${clipObj.top - clipObj.cropX * clipObj.scaleX}px`,
-        left: `${clipObj.left - clipObj.cropY * clipObj.scaleY}px`,
-        width: `${clipObj.scaleX * img.naturalWidth}px`,
-        height: `${clipObj.scaleY * img.naturalHeight}px`,
-      });
-      setCrop({
-        x: clipObj.cropX / scaleX,
-        y: clipObj.cropY / scaleY,
-        width: clipObj.width / scaleX,
-        height: clipObj.height / scaleY,
-      });
-    },
-    [clipObj]
-  );
+  useEffect(() => {
+    const img = imgRef.current;
+    if (!img) return;
+    console.log("****** 1", clipObj, img.width, img.naturalWidth);
+    const scaleX = img.naturalWidth / img.width;
+    const scaleY = img.naturalHeight / img.height;
+    // setCropStyle({
+    //   top: `${clipObj.top - clipObj.cropX * clipObj.scaleX}px`,
+    //   left: `${clipObj.left - clipObj.cropY * clipObj.scaleY}px`,
+    //   width: `${clipObj.scaleX * img.naturalWidth}px`,
+    //   height: `${clipObj.scaleY * img.naturalHeight}px`,
+    // });
+    console.log(
+      "********",
+      clipObj.cropX / scaleX,
+      clipObj.cropY / scaleY,
+      clipObj.width
+    );
+    setCrop({
+      x: clipObj.cropX / scaleX,
+      y: clipObj.cropY / scaleY,
+      width: clipObj.width / scaleX,
+      height: clipObj.height / scaleY,
+    });
+  }, [imgRef.current]);
+
+  const onLoad = useCallback((img) => {
+    imgRef.current = img;
+    // init(img);
+  }, []);
 
   useEffect(() => {
     if (!completedCrop || !imgRef.current) {
